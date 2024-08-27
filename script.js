@@ -1,65 +1,67 @@
 function Gameboard() {
-	/* Need to make a gameboard that's a grid of 3x3 */
-	const gameboard = ["1", "2", "3", "4", "5", "6", "7", "8", "9"];
+	const gameboard = [];
+	const squares = 9;
+	const cells = document.querySelectorAll(".cell");
 
-/* 
-		Need to replace the cell on the grid with the marker of the player
-			For this i need to know where the player wants to place the marker, for the first step im gonna do it with the console
-				this is kind of the grid i want
-					0 1 2
-					3 4 5
-					6 7 8
-*/
-	const placeMarker = (marker, place) => gameboard.splice(place - 1, 1, marker);
+
+	for (let i = 0; i < squares; i++) {
+		gameboard.push(Cell());
+	}
 
 	const getGameboard = () => gameboard;
 
-	const printGameboard = () => {
-		let board = "";
-		for (let i = 0; i < gameboard.length; i++) {
-			board += `${gameboard[i]} `;
-			if (i % 3 === 0 && i !== 0) {
-				board += "\n"
-			}
+	const displayGameboard = () => {
+		for (let i = 0; i < squares; i++) {
+			cells[i].innerText = gameboard[i].getMarker();
 		}
-		return board;
 	}
 
-	return { getGameboard, placeMarker, printGameboard };
+	const getCell = () => {
+		cells.forEach(cell => cell.addEventListener("click", e => e.target.id));
+	}
+
+	return { getGameboard, displayGameboard, getCell };
 }
 
 function Player(name, marker) {
 
-	// each player needs to have a name and a marker
-
 	return { name, marker };
 }
 
-function Game() {
+function Cell() {
+	let marker = "_";
 
-	/*
-		Need to create the gameboard and both players, player1 and player2.
+	const addMarker = (player) => {
+		marker = player.marker;
+	}
 
-		Need to alternate the movement of the players, first goes player1 and then goes player2
-			For this im thinking on doing an alternator, that goes from true to false (true = player1 move, false = player2 move)
+	const getMarker = () => marker;
 
-		Need to check which player won and stop the game.
-	*/
-
-	const gameboard = Gameboard();
-	const player1 = Player("Tomas", "X");
-	const player2 = Player("Nicole", "O");
-	
-	// gameboard.placeMarker(player1.marker, 2);
-	// gameboard.placeMarker(player2.marker, 1);
-	// gameboard.placeMarker(player1.marker, 4);
-	// gameboard.placeMarker(player2.marker, 5);
-	// gameboard.placeMarker(player1.marker, 6);
-
-	console.log(gameboard.printGameboard());
-	
-
-
+	return { addMarker, getMarker }
 }
 
-const playGame = Game();
+function GameController() {
+
+	const gameboard = Gameboard();
+
+	const players = [Player("Tomas", "X"), Player("Nicole", "O")];
+
+	let activePlayer = players[0];
+	const switchPlayerTurn = () => {
+		activePlayer = activePlayer === players[0] ? players[1] : players[0];
+	};
+	const getActivePlayer = () => activePlayer;
+
+	const playRound = () => {
+		gameboard.getCell().addMarker(getActivePlayer().marker, gameboard.getCell());
+		gameboard.printGameboard();
+		switchPlayerTurn();
+	}
+
+	gameboard.displayGameboard();
+	playRound();
+
+	return { getActivePlayer };
+}
+
+const game = GameController();
