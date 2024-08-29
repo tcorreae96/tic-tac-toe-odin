@@ -1,26 +1,13 @@
 function Gameboard() {
-	const gameboard = [];
-	const squares = 9;
-	const cells = document.querySelectorAll(".cell");
-
-
-	for (let i = 0; i < squares; i++) {
-		gameboard.push(Cell());
-	}
+	const gameboard = ["", "", "", "", "", "", "", "", ""];
 
 	const getGameboard = () => gameboard;
 
-	const displayGameboard = () => {
-		for (let i = 0; i < squares; i++) {
-			cells[i].innerText = gameboard[i].getMarker();
-		}
+	const addMarker = (player, position) => {
+		gameboard[position] = player.marker;
 	}
 
-	const getCell = () => {
-		cells.forEach(cell => cell.addEventListener("click", e => e.target.id));
-	}
-
-	return { getGameboard, displayGameboard, getCell };
+	return { getGameboard, addMarker };
 }
 
 function Player(name, marker) {
@@ -28,23 +15,11 @@ function Player(name, marker) {
 	return { name, marker };
 }
 
-function Cell() {
-	let marker = "_";
-
-	const addMarker = (player) => {
-		marker = player.marker;
-	}
-
-	const getMarker = () => marker;
-
-	return { addMarker, getMarker }
-}
-
 function GameController() {
 
 	const gameboard = Gameboard();
 
-	const players = [Player("Tomas", "X"), Player("Nicole", "O")];
+	const players = [Player("Tomas", "X"), Player("Gonzalo", "O")];
 
 	let activePlayer = players[0];
 	const switchPlayerTurn = () => {
@@ -53,15 +28,14 @@ function GameController() {
 	const getActivePlayer = () => activePlayer;
 
 	const playRound = () => {
-		gameboard.getCell().addMarker(getActivePlayer().marker, gameboard.getCell());
-		gameboard.printGameboard();
+		gameboard.addMarker(getActivePlayer());
 		switchPlayerTurn();
 	}
 
 	gameboard.displayGameboard();
-	playRound();
 
-	return { getActivePlayer };
+	return { playRound };
 }
+
 
 const game = GameController();
